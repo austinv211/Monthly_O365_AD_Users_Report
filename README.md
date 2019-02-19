@@ -3,8 +3,10 @@ This is a powershell script for reporting on O365 and AD data by joining the two
 
 # Required Modules
 
-- JoinObject
-- ImportExcel
+- JoinObject:
+	https://github.com/RamblingCookieMonster/PowerShell/blob/master/Join-Object.ps://github.com/RamblingCookieMonster/PowerShell/blob/master/Join-Object.ps1
+- ImportExcel:
+	https://github.com/dfinke/ImportExcel
 
 # Version Changes
 
