@@ -479,7 +479,7 @@ function Get-MonthlyMsolReport
     $ptd += New-PivotTableDefinition -PivotTableName "Sum. of Deployment - Bus. Group" -SourceWorkSheet "Licensed Users" -PivotRows Group, Company, LowOrgName, UserPrincipalName -PivotData @{'Group'='count'}
 
     #export the result to an excel file, into a table with multiple worksheets
-    $excel = $productLicenseSummary | Select-Object UserPrincipalName, DisplayName, EmployeeID, Department, Product, Group, LowOrgName, DistinguishedName | 
+    $productLicenseSummary | Select-Object UserPrincipalName, DisplayName, EmployeeID, Department, Product, Group, LowOrgName, DistinguishedName | 
         Export-Excel -Path $filePath -TableName "BillableSubsTable" -AutoSize -WorkSheetname "Det. of Billable Subscriptions"
 
     $licensesEval | Select-Object UserPrincipalName, DisplayName, Department, EmployeeID, Description, LastLogonAD, Company, extensionAttribute3, msexchextensionattribute18, mailNickname, DistinguishedName, SamAccountName, @{Name="Has an O365 Entitlement/License";Expression={$_.hasEnterprisePackLicense}}, Group, LowOrgName, isLOA | 
