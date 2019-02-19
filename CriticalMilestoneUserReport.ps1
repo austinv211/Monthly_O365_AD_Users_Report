@@ -505,7 +505,7 @@ function Get-MonthlyMsolReport
     $ls.Workbook.Worksheets["Sum. of Deployments - LowOrg"].Cells["E405"].formula = "=SUM(E1:E404)"
 
     #get conditional text for highlighting
-    Add-ConditionalFormatting -Address $ls.Workbook.Worksheets["Det. of Billable Subscriptions"].Names["DistinguishedName"].Address -RuleType ContainsText -ConditionValue "disabled" -ForegroundColor Red -Bold
+    Add-ConditionalFormatting -WorkSheet $ls.Workbook.Worksheets["Det. of Billable Subscriptions"] -Address "H2:H$Lastrow" -RuleType Contains -ConditionValue "Disabled" -ForegroundColor Red -Bold
 
     $ls.Save()
 
