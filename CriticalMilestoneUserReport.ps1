@@ -6,10 +6,6 @@ AUTHOR: Austin Vargason
 DATEMODIFIED: 08/03/18
 #>
 
-#TODO: Add scheduled task to run report on demand with a date/time trigger.
-#TODO: Backup code online
-
-
 #import the JoinObject module
 import-module JoinObject
 
@@ -130,8 +126,6 @@ function Set-InactiveUsers() {
     )
 
     Process {
-
-        #TODO: Get other LOA category from caroline msexchextension19 = LOA or PLA for AD
 
         foreach ($row in $InputData) {
             
@@ -345,12 +339,17 @@ function Get-ProductSummary() {
 
     Process {
 
-        #TODO: Add color coding for users containing disabled or dusers
-
         $productLicenseSummary = @()
 
         #add to the product license summary
         foreach ($user in $InputData) {
+
+            #determine whether user is disabled
+            $isDisabled = $false
+                
+            if ($user.DistinguishedName -like "*Disabled*") {
+                $isDisabled = $true
+            }
             
             $products = @()
     
@@ -385,6 +384,7 @@ function Get-ProductSummary() {
                 $obj | Add-Member -Name msexchextensionattribute18 -Value $user.msexchextensionattribute18 -MemberType NoteProperty
                 $obj | Add-Member -Name mailNickname -Value $user.mailNickname -MemberType NoteProperty
                 $obj | Add-Member -Name DistinguishedName -Value $user.DistinguishedName -MemberType NoteProperty
+                $obj | Add-Member -Name isDisabled -Value $isDisabled -MemberType NoteProperty
                 $obj | Add-Member -Name SamAccountName -Value $user.SamAccountName -MemberType NoteProperty
                 $obj | Add-Member -Name Group -Value $user.Group -MemberType NoteProperty
                 $obj | Add-Member -Name LowOrgName -Value $user.LowOrgName -MemberType NoteProperty
@@ -479,7 +479,7 @@ function Get-MonthlyMsolReport
     $ptd += New-PivotTableDefinition -PivotTableName "Sum. of Deployment - Bus. Group" -SourceWorkSheet "Licensed Users" -PivotRows Group, Company, LowOrgName, UserPrincipalName -PivotData @{'Group'='count'}
 
     #export the result to an excel file, into a table with multiple worksheets
-    $productLicenseSummary | Select-Object UserPrincipalName, DisplayName, EmployeeID, Department, Product, Group, LowOrgName, DistinguishedName | 
+    $productLicenseSummary | Select-Object UserPrincipalName, DisplayName, EmployeeID, Department, Product, Group, LowOrgName, isDisabled | 
         Export-Excel -Path $filePath -TableName "BillableSubsTable" -AutoSize -WorkSheetname "Det. of Billable Subscriptions"
 
     $licensesEval | Select-Object UserPrincipalName, DisplayName, Department, EmployeeID, Description, LastLogonAD, Company, extensionAttribute3, msexchextensionattribute18, mailNickname, DistinguishedName, SamAccountName, @{Name="Has an O365 Entitlement/License";Expression={$_.hasEnterprisePackLicense}}, Group, LowOrgName, isLOA | 
@@ -504,8 +504,40 @@ function Get-MonthlyMsolReport
 
     $ls.Workbook.Worksheets["Sum. of Deployments - LowOrg"].Cells["E405"].formula = "=SUM(E1:E404)"
 
-    #get conditional text for highlighting
-    Add-ConditionalFormatting -WorkSheet $ls.Workbook.Worksheets["Det. of Billable Subscriptions"] -Address "H2:H$Lastrow" -RuleType ContainsText -ConditionValue "Disabled" -ForegroundColor Red -Bold
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O2"].Value = "Number of Licenses Currently in Microsoft Agreement"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P2"].Value = Get-MsolAccountSku | Where {$_.AccountSkuId -eq "sdcountycagov:ENTERPRISEPACK_GOV"} | Select -ExpandProperty ActiveUnits
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O3"].Value = "Number of Licenses Owned by DCSS (State Level)"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P3"].Value = 445
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O4"].Value = "Number of Licenses Currently Owned by COSD"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P4"].formula = "=P2-P3"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O5"].Value = "Number of Licenses Deployed by COSD"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P5"].formula = '=GETPIVOTDATA("Group",$A$1)'
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O6"].Value = "Licenses in Buffer"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P6"].formula = '=P4-P5)'
+
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O9"].Value = "Category Name/Tab Name"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P9"].Value = "Description"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O10"].Value = "Community Services"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P10"].Value = "Mailbox, User and Kiosk accounts in CSG"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O11"].Value = "Finance & General Government"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P11"].Value = "Mailbox, User and Kiosk accounts in FGG"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O12"].Value = "Health & Human Services"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P12"].Value = "Mailbox, User and Kiosk accounts in HHSA"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O13"].Value = "Land Use & Environment"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P13"].Value = "Mailbox, User and Kiosk accounts in LUEG"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O14"].Value = "Public Safety"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P14"].Value = "Mailbox, User and Kiosk accounts in PSG"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O15"].Value = "Other Budgetary Entities"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P15"].Value = "Accounts for County Consultants"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O16"].Value = "Support Accounts (County-Approved ITO Use)"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P16"].Value = "Whitelisted Perspecta and other vendor Admin Accounts"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O17"].Value = "Inactive Users"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P17"].Value = "Accounts where most recent logon is older than 6  months and account was created more than 6 months ago."
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O18"].Value = "Billable Subscriptions"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P18"].Value = "Not all users in this tab have O365 entitlements"
+
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O21"].Value = "NOTE 1: Not all users found in Detail of Billable Subscription tab have O365 Entitlements. This tab only provided for tracking other subscriptions"
+
 
     $ls.Save()
 
