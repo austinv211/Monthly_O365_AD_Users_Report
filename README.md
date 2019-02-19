@@ -10,4 +10,4 @@ This is a powershell script for reporting on O365 and AD data by joining the two
 
 # Version Changes
 
-- Added conditional formatting for disabled users in theproduct summary tab
+- Added conditional formatting for disabled users in the product summary tab
