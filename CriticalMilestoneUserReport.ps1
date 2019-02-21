@@ -513,30 +513,9 @@ function Get-MonthlyMsolReport
     $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O5"].Value = "Number of Licenses Deployed by COSD"
     $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P5"].formula = '=GETPIVOTDATA("Group",$A$1)'
     $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O6"].Value = "Licenses in Buffer"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P6"].formula = '=P4-P5)'
-
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O9"].Value = "Category Name/Tab Name"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P9"].Value = "Description"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O10"].Value = "Community Services"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P10"].Value = "Mailbox, User and Kiosk accounts in CSG"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O11"].Value = "Finance & General Government"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P11"].Value = "Mailbox, User and Kiosk accounts in FGG"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O12"].Value = "Health & Human Services"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P12"].Value = "Mailbox, User and Kiosk accounts in HHSA"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O13"].Value = "Land Use & Environment"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P13"].Value = "Mailbox, User and Kiosk accounts in LUEG"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O14"].Value = "Public Safety"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P14"].Value = "Mailbox, User and Kiosk accounts in PSG"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O15"].Value = "Other Budgetary Entities"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P15"].Value = "Accounts for County Consultants"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O16"].Value = "Support Accounts (County-Approved ITO Use)"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P16"].Value = "Whitelisted Perspecta and other vendor Admin Accounts"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O17"].Value = "Inactive Users"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P17"].Value = "Accounts where most recent logon is older than 6  months and account was created more than 6 months ago."
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O18"].Value = "Billable Subscriptions"
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P18"].Value = "Not all users in this tab have O365 entitlements"
-
-    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["O21"].Value = "NOTE 1: Not all users found in Detail of Billable Subscription tab have O365 Entitlements. This tab only provided for tracking other subscriptions"
+    $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"].Cells["P6"].formula = '=P4-P5'
+    
+    Set-ExcelRange -WorkSheet $ls.Workbook.Worksheets["Sum. of Deployed O365 Licenses"] -Range "O2:P6" -BackgroundPattern LightGray
 
 
     $ls.Save()
