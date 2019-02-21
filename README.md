@@ -15,3 +15,4 @@ This is a powershell script for reporting on O365 and AD data by joining the two
 # Fixes Needed
 
 - Remove Licenses Field from Support Account Details Display
+- Split Internal and COSD inactive users
